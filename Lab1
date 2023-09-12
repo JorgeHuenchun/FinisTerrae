@@ -1,0 +1,127 @@
+#Laboratorio 1
+#Matias Urbina, Jorge Huenchun
+
+def custom_abs(x):
+    if x >= 0:
+        return x % 26
+    return 26 + x
+
+def rot(r, n):
+    if 'a' <= r <= 'z':
+        return chr(custom_abs(ord(r) + n - 97) + 97)
+    if 'A' <= r <= 'Z':
+        return chr(custom_abs(ord(r) + n - 65) + 65)
+    return r
+
+def rotar(string, n):
+    str_new = ""
+    for char in string:
+        str_new += rot(char, n)
+    return str_new
+
+def custom_abs(x):
+    if x >= 0:
+        return x % 26
+    return 26 + x
+
+def rot(r, n):
+    if 'a' <= r <= 'z':
+        return chr(custom_abs(ord(r) + n - 97) + 97)
+    if 'A' <= r <= 'Z':
+        return chr(custom_abs(ord(r) + n - 65) + 65)
+    return r
+
+def Sanitize(input_str):
+    output = []
+    for char in input_str:
+        if 65 <= ord(char) <= 90:
+            output.append(char)
+        elif 97 <= ord(char) <= 122:
+            output.append(chr(ord(char) - 32))
+        else:
+            output.append(char)
+    return ''.join(output)
+
+def Quartets(input_str):
+    output = []
+    for i, char in enumerate(input_str):
+        if i % 4 == 0 and i != 0:
+            output.append(' ')
+        output.append(char)
+    return ''.join(output)
+
+def EncodePair(a, b):
+    return chr(((ord(a) - ord('A') + ord(b) - ord('A')) % 26) + ord('A'))
+
+def DecodePair(a, b):
+    return chr((((ord(a) - ord('A')) - (ord(b) - ord('A')) + 26) % 26) + ord('A'))
+
+def Encipher(msg, key):
+    smsg, skey = Sanitize(msg), Sanitize(key)
+    output = []
+    for i, char in enumerate(smsg):
+        if not (65 <= ord(char) <= 90):
+            output.append(char)
+            continue
+        encoded = EncodePair(char, skey[i % len(skey)])
+        if ord(msg[i]) <= 90:
+            output.append(encoded)
+        else:
+            output.append(chr(ord(encoded) + 32))
+    return ''.join(output)
+
+def Decipher(msg, key):
+    smsg, skey = Sanitize(msg), Sanitize(key)
+    output = []
+    for i, char in enumerate(smsg):
+        if not (65 <= ord(char) <= 90):
+            output.append(char)
+            continue
+        decoded = DecodePair(char, skey[i % len(skey)])
+        if ord(msg[i]) <= 90:
+            output.append(decoded)
+        else:
+            output.append(chr(ord(decoded) + 32))
+    return ''.join(output)
+
+
+palabra = "goku"
+
+n = 15
+resultado = rotar(palabra, n)
+print("rot 15:  ",resultado)
+
+clave = "cvqnoteshrwnszhhksorbqcoas"
+resultado_vigenere = Encipher(resultado, clave)
+print("Vigenere:  ",resultado_vigenere)
+
+
+n = 7
+resultado2 = rotar(resultado_vigenere, n)
+print("Mensaje cifrado:  ",resultado2)
+
+import requests
+
+headers = {
+    'Content-Type': 'text/plain',
+}
+
+data = {"msg":resultado2}
+
+response = requests.post('http://finis.malba.cl/SendMsg', headers=headers, data=data)
+
+print(response.text,"cifrado")
+
+
+n = -7
+final = rotar(resultado2,n)
+print("rot -7:  ",final)
+
+resultado_vigenere2 = Encipher(final, clave)
+print("Vigenere:  ",resultado_vigenere2)
+
+
+encriptado = rotar(resultado_vigenere2, -15)
+print("rot -15:  ",encriptado)
+
+
